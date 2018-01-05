@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -38,8 +40,61 @@ func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
 	switch method := r.Method; method {
 	case http.MethodGet:
 		books := AllBooks()
-		write
+		writeJSON(w, books)
+	case http.MethodPost:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		book := FromJSON(body)
+		isbn, created := CreateBook(book)
+		if created {
+			w.Header().Add("Location", "/api/books/"+isbn)
+			w.WriteHeader(http.StatusCreated)
+		} else {
+			w.WriteHeader(http.StatusConflict)
+		}
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unsupported request method."))
+	}
+}
 
+func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	fmt.Println("path:", path)
+
+	isbn := path[len("/api/books/"):]
+	fmt.Println("isbn:", isbn)
+
+	switch method := r.Method; method {
+	case http.MethodGet:
+		book, found := GetBook(isbn)
+		if found {
+			writeJSON(w, book)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodPut:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		book := FromJSON(body)
+		exists := UpdateBook(isbn, book)
+		if exists {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodDelete:
+		DeleteBook(isbn)
+		w.WriteHeader(http.StatusOK)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unsupported request method"))
 	}
 }
 
@@ -51,6 +106,7 @@ func AllBooks() []Book {
 		values[idx] = book
 		idx++
 	}
+	return values
 }
 
 func writeJSON(w http.ResponseWriter, i interface{}) {
@@ -60,4 +116,30 @@ func writeJSON(w http.ResponseWriter, i interface{}) {
 	}
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	w.Write(b)
+}
+
+func CreateBook(book Book) (string, bool) {
+	_, exists := books[book.ISBN]
+	if exists {
+		return "", false
+	}
+	books[book.ISBN] = book
+	return book.ISBN, true
+}
+
+func GetBook(isbn string) (Book, bool) {
+	book, found := books[isbn]
+	return book, found
+}
+
+func UpdateBook(isbn string, book Book) bool {
+	_, exists := books[isbn]
+	if exists {
+		books[isbn] = book
+	}
+	return exists
+}
+
+func DeleteBook(isbn string) {
+	delete(books, isbn)
 }

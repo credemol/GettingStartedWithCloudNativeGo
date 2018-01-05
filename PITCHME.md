@@ -26,7 +26,7 @@ Meetup: Cloud Native Applications
 * Simple REST API implementation
 
 ---
-### Simple Go HTTP Server Implementation
+### 2.1 Simple Go HTTP Server Implementation
 
 * Using the Go net/http package
 * Implementing and start a simple HTTP server
@@ -45,8 +45,8 @@ $ source ~/.bash_profile
 
 $ mkdir -p ${GOPATH}/src/GettingStartedWithCloudNativeGo
 $ cd ${GOPATH}/src/GettingStartedWithCloudNativeGo
-$ mkdir -p src/chapter2_1
-$ cd src/chapter2_1
+$ mkdir -p chapter2_1
+$ cd chapter2_1
 $ vi microservice.go
 ```
 ---
@@ -146,7 +146,7 @@ $ ./microservice
 [http://localhost:8080/api/echo?message=Cloud+Native+Go](http://localhost:8080/api/echo?message=Cloud+Native+Go)
 
 ---
-### JSON Marshalling/Unmarshalling of Go Structs
+### 2.2 JSON Marshalling/Unmarshalling of Go Structs
 
 * Using the Go JSON package
 * JSON marshalling/unmarshalling of Go structs
@@ -154,18 +154,18 @@ $ ./microservice
 * Adding simple REST endpoint with JSON response
 
 ---
-#### Init Project
+#### Initialize Project
 
 ```sh
-$ mkdir src/chapter2_2
-$ cp src/chapter2_1/microservice.go src/chapter2_2
-$ cd src/chapter2_2
+$ mkdir chapter2_2
+$ cp chapter2_1/microservice.go chapter2_2
+$ cd chapter2_2
 $ mkdir api
 $ vi api/book.go
 ```
 
 ---
-#### src/chapter2_2/api/book.go
+#### chapter2_2/api/book.go
 ```go
 package api
 
@@ -229,7 +229,7 @@ $ vi api/book_test.go
 ```
 
 ---
-#### src/chapter2_2/api/book_test.go
+#### chapter2_2/api/book_test.go
 ```go
 package api
 
@@ -393,6 +393,379 @@ func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
 ```
 @[1-4](add sample book data)
 @[6-14](BooksHandleFunc function)
+
+---
+#### chapter2_2/microservice.go
+
+```go
+package main
+
+import (
+	"GettingStartedWithCloudNativeGo/chapter2_2/api"
+	"fmt"
+	"net/http"
+	"os"
+)
+
+func main() {
+	http.HandleFunc("/", index)
+	http.HandleFunc("/api/echo", echo)
+
+	http.HandleFunc("/api/books", api.BooksHandleFunc)
+	http.ListenAndServe(port(), nil)
+}
+```
+@[4](import book api)
+@[14](add HandlerFunc for '/api/books')
+
+---
+#### Run & Test microservice
+
+```sh
+$ go build -o microservice
+$ ./microservice
+```
+
+With Postman, send a request to [http://localhost:8080/api/books](http://localhost:8080/api/books)
+
+---
+### 2.3 Simple REST API Implementation
+
+* Using the request path and query parameters
+* Using HTTP status codes
+* Using HTTP verbs: GET, PUT, POST, DELETE
+
+---
+#### Initialize Project
+
+```sh
+$ cd ${GOPATH}/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter2_2 chapter2_3
+$ cd chapter2_3
+```
+
+---
+#### chapter2_3/api/book.go
+
+```go
+package api
+
+import (
+	"encoding/json"
+	"net/http"
+)
+
+type Book struct {
+	Title       string `json:"title"`
+	Author      string `json:"author"`
+	ISBN        string `json:"isbn"`
+	Description string `json:"description,omitempty"`
+}
+
+func (b Book) ToJSON() []byte {
+	ToJSON, err := json.Marshal(b)
+	if err != nil {
+		panic(err)
+	}
+	return ToJSON
+}
+
+func FromJSON(data []byte) Book {
+	book := Book{}
+	err := json.Unmarshal(data, &book)
+	if err != nil {
+		panic(err)
+	}
+	return book
+}
+
+var books = map[string]Book{
+	"0345391802": Book{Title: "The Hitchhiker's Guide to the Galaxy", Author: "Douglas Adams", ISBN: "0345391802"},
+	"0000000000": Book{Title: "Cloud Native Go", Author: "M.-Leander Reimer", ISBN: "0000000000"},
+}
+
+func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
+	b, err := json.Marshal(Books)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Write(b)
+}
+```
+@[12](add description field, with omitempty)
+@[32-35](using map in order to mimic an in-memory data store)
+
+---
+#### book.go - AllBooks(), writeJSON() functions
+
+```go
+func AllBooks() []Book {
+	values := make([]Book, len(books))
+	idx := 0
+
+	for _, book := range books {
+		values[idx] = book
+		idx++
+	}
+	return values
+}
+
+func writeJSON(w http.ResponseWriter, i interface{}) {
+	b, err := json.Marshal(i)
+	if err != nil {
+		panic(err)
+	}
+	w.Header().Add("Content-Type", "application/json; charset=utf-8")
+	w.Write(b)
+}
+```
+@[1-10](AllBooks function)
+@[12-19](writeJSON function)
+
+---
+#### book.go - BooksHandleFunc
+
+```go
+func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
+	switch method := r.Method; method {
+	case http.MethodGet:
+		books := AllBooks()
+		writeJSON(w, books)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unsupported request method."))
+	}
+}
+```
+
+---
+#### chapter2_3/microservice.go
+
+```go
+import (
+	"GettingStartedWithCloudNativeGo/chapter2_3/api"
+	"fmt"
+	"net/http"
+	"os"
+)
+```
+@[2](chapter2_2 -> chapter2_3)
+
+---
+#### Run & Test microservice.go
+
+```sh
+$ cd chapter2_3
+$ go build -o microservice
+$ ./microservice
+```
+
+With Postman, send a request to [http://localhost:8080/api/books](http://localhost:8080/api/books) with GET and POST
+
+---
+#### book.go - CreateBook
+
+```go
+func CreateBook(book Book) (string, bool) {
+	_, exists := books[book.ISBN]
+	if exists {
+		return "", false
+	}
+	books[book.ISBN] = book
+	return book.ISBN, true
+}
+```
+
+---
+#### book.go - BooksHandleFunc
+
+```go
+func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
+	switch method := r.Method; method {
+	case http.MethodGet:
+		books := AllBooks()
+		writeJSON(w, books)
+	case http.MethodPost:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		book := FromJSON(body)
+		isbn, created := CreateBook(book)
+		if created {
+			w.Header().Add("Location", "/api/books/"+isbn)
+			w.WriteHeader(http.StatusCreated)
+		} else {
+			w.WriteHeader(http.StatusConflict)
+		}
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unsupported request method."))
+	}
+}
+```
+@[6-19](Create Book)
+
+---
+#### Run & Test microservice
+
+```sh
+$ go build -o microservice
+$ ./microservice
+```
+With Postman, send a request to http://localhost:8080/api/books with POST.
+The request payload should be like below
+
+```json
+{
+	"title": "New Book",
+	"author": "Postman",
+	"isbn": "1234567890"
+}
+```
+
+---
+### Create, Update, Delete a book
+
+---
+#### book.go - BookHandleFunc
+```go
+func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	isbn := path[len("/api/books/"):]
+
+	switch method := r.Method; method {
+	case http.MethodGet:
+		fmt.Println("get")
+	case http.MethodPut:
+		fmt.Println("put")
+	case http.MethodDelete:
+		fmt.Println("delete")
+	default:
+		fmt.Println("method:", method)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+}
+```
+
+---
+#### microservice.go 
+
+```go
+func main() {
+	http.HandleFunc("/", index)
+	http.HandleFunc("/api/echo", echo)
+
+	http.HandleFunc("/api/books", api.BooksHandleFunc)
+	http.HandleFunc("/api/books/", api.BookHandleFunc)
+	http.ListenAndServe(port(), nil)
+}
+```
+@[6](add BookHandleFunc)
+
+---
+#### Test & Run microservice
+
+```sh
+$ go build -o microservice
+$ ./microservice
+```
+You can send a request to [http://localhost:8080/api/books/0000000000](http://localhost:8080/api/books/0000000000)
+
+---
+#### book.go
+
+```go
+func GetBook(isbn string) (Book, bool) {
+	book, found := books[isbn]
+	return book, found
+}
+
+func UpdateBook(isbn string, book Book) bool {
+	_, exists := books[isbn]
+	if exists {
+		books[isbn] = book
+	}
+	return exists
+}
+
+func DeleteBook(isbn string) {
+	delete(books, isbn)
+}
+```
+@[1-4](GetBook function)
+@[6-12](UpdateBook function)
+@[14-16](DeleteBook function)
+
+---
+#### book.go - BookHandleFunc
+
+```go
+func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	fmt.Println("path:", path)
+
+	isbn := path[len("/api/books/"):]
+	fmt.Println("isbn:", isbn)
+
+	switch method := r.Method; method {
+	case http.MethodGet:
+		book, found := GetBook(isbn)
+		if found {
+			writeJSON(w, book)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodPut:
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		book := FromJSON(body)
+		exists := UpdateBook(isbn, book)
+		if exists {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	case http.MethodDelete:
+		DeleteBook(isbn)
+		w.WriteHeader(http.StatusOk)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unsupported request method"))
+	}
+}
+```
+@[9-15](Read a Book)
+@[16-28](Update a Book)
+@[29-31](Delete a Book)
+@[32-34](Bad Request)
+
+---
+### Test & Run
+
+```sh
+$ go build -o microservice
+$ ./microservice
+```
+
+call this url [http://localhost:8080/api/books/0000000000](http://localhost:8080/api/books/0000000000) with
+HTTP GET, PUT, DELETE method.
+when updating the book, use this payload
+
+```json
+{
+    "title": "Cloud Natvie Go(Update)",
+    "author": "M.-Leander Reimer",
+    "isbn": "0000000000"
+}
+```
+
 ---
 ## Resources
 
