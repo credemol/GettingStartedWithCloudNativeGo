@@ -192,10 +192,10 @@ func BooksHandleFunc(w http.ResponseWriter, r *http.Request) {
 }
 ```
 @[3-6](import required packages)
-@[8-9](Book struct)
-@[11-13](ToJSON function)
-@[15-17](FromJSON function)
-@[19-20](API handler function)
+@[8-12](Book struct)
+@[14-16](ToJSON function)
+@[18-20](FromJSON function)
+@[22-23](API handler function)
 
 
 ---
@@ -765,6 +765,363 @@ when updating the book, use this payload
     "isbn": "0000000000"
 }
 ```
+
+---
+## Chapter 3
+
+> Introduction to Docker and Microservice Containerization
+
+* 3.1 Basic Docker Workflow and Docker Commands
+* 3.2 Build Naive Docker Image for Go Microservice
+* 3.3 Running Containerized Go Microservice Locally
+* 3.4 Improved Docker Image and Docker Compose
+
+---
+Initilize Project
+
+```sh
+cd $GOPATH/src/GettingStartedWithCloudNativeGo
+cp -R chapter2_3 chapter3_1
+```
+---
+### Basic Docker Workflow and Docker Commands
+
+* Hardware versus OS virtualization
+* Docker images and containers
+* The Docker workflow
+* Some basic Docker commands
+
+---
+#### Hardware versus OS Virtualization 
+![Hardware versus OS Virtualization](https://i.ytimg.com/vi/jDivl-tCWJM/maxresdefault.jpg)
+
+---
+#### Docker images and Containers
+(Image)
+
+
+
+
+----
+#### Docker Hub
+
+1. hub.docker.com
+1. keyword: golang
+1. click Search button
+
+----
+#### The Docker Workflow
+![docker-stages](https://user-images.githubusercontent.com/5771924/34644160-5939b5a0-f385-11e7-8dfd-457c965e7298.png)
+
+
+#### Some Baisc Docker Commands
+
+Command                                      | Action
+---------------------------------------------|-------------------------------------------------
+docker build -t <tag> .                      | Build a docker image with the given tag from the current directory.
+docker images<br/>docker image ls            | Prints all local images
+docker run<br/>  -d<br/>  -e `<environment variable>`<br/>  -p `<host-port>:<container-port>`<br/>  `<image> <entrypoint process>` | Run a Docker image: Creates and runs a container.<ul><li>in background</li><li>with defined EVN variable</li><li>with port forwarding from Host to Container</li><li>image name and entrypoint process</li></ul>
+docker run <br/>  -ti<br/>  `<image> /bin/sh`| Run a Docker image and open a shell within the container <ul><li>with forwarding of local terminal</li><li>image name and shell (or "/bin/bash")</li></ul> 
+docker ps --all<br/>docker container ls -a   | Prints all containers (without --all prints only running containers)
+docker kill `<container>`                    | Terminate container (send SIGKILL to entrypoint process)
+docker rm `<container>`<br/>docker container rm `<container>` | Remove container.
+docker rim -f `<image>`<br/>docker image rm `<image>` | Remove local image(use -f to force removal) 
+
+---
+
+```sh
+$ docker images
+$ docker image ls
+$ docker image ls | grep golang
+```
+visit [https://hub.docker.com/_/golang/](https://hub.docker.com/_/golang/) and see its versions and description
+
+```sh
+$ docker pull golang
+$ docker image ls | grep golang
+```
+
+---
+### Build Naive Docker Image for Go Microservice
+
+* Writing a Dockerfile for a Go microservice
+* Building the Docker image from the Dockerfile
+* Tagging and pushing image to Docker Hub
+
+---
+#### Writing a Dockerfile
+
+```sh
+$ cd $GOPATH/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter2_3 chapter3_2
+$ cd chapter3_2
+
+$ go clean 
+$ grep -rl 'chapter2_3' ./ | xargs sed -i '' -e 's/\/chapter2_3//g' 
+$ vi Dockerfile
+```
+
+---
+#### chapter3_2/Dockerfile
+```dockerfile
+FROM golang:latest
+MAINTAINER YG Kim(credemol@gmail.com)
+
+ENV SOURCES /go/src/GettingStartedWithCloudNativeGo/
+
+COPY . ${SOURCES}
+
+RUN cd ${SOURCES} && CGO_ENABLED=0 go install
+
+ENV PORT 8080
+EXPOSE 8080
+
+ENTRYPOINT GettingStartedWithCloudNativeGo
+```
+
+---
+#### Build Docker Image
+
+```sh
+docker build -t cloud-native-go:1.0.0 .
+docker image ls | grep cloud-native-go
+```
+
+#### Alpine Version
+
+chapter3_2/Dockerfile
+```dockerfile
+FROM golang:1.9.2-alpine3.7
+```
+
+```sh
+docker build -t cloud-native-go:1.0.1 .
+docker image ls | grep cloud-native-go
+```
+
+---
+#### Push Docker image to Docker Hub
+
+```sh
+$ docker tag cloud-native-go:1.0.1 credemol/cloud-native-go:1.0.1
+$ docker image ls | grep cloud-native-go
+$ docker login
+$ docker push credemol/cloud-native-go:1.0.1
+
+```
+see if your docker image is registered to Docker Hub
+[https://hub.docker.com/r/credemol/cloud-native-go/](https://hub.docker.com/r/credemol/cloud-native-go/)
+In this case, credemol is my username of Docker Hub, so please change it with your own username.
+
+---
+### 3.3 Running Containerized Go Microservice Locally
+
+* Running Docker image locally
+* Specify environment variables and ports
+* Starting, stopping, and restarting containers
+* Adding CPU and memory constraints
+
+
+#### Running Docker image locally
+
+```sh
+$ cd $GOPATH/src/GettingStartedWithCloudNativeGo
+$ docker image ls | grep cloud-native-go
+$ docker run -it -p 8080:8080 cloud-native-go:1.0.1
+```
+
+Send a GET request to [http://docker-host:8080/api/books](http://docker-host:8080/api/books), in this case docker-host can be localhost if the Operating System of your laptop, or if you are working on Windows 7 or 8, please run _docker-machine ls_ to see what docker host ip is. That is configured as _192.168.99.100_ by default. 
+
+> Press Ctrl+C to stop the container
+
+---
+#### Running Docker image locally (Continued)
+
+```sh
+$ docker run -it -e "PORT=9090" -p 8080:9090 cloud-native-go:1.0.1
+$ Ctrl+C
+
+$ docker ps 
+$ docker ps --all (or -a)
+$ docker container ls
+$ docker container ls -a 
+$ docker run --name cloud-native-go -d -p 8080:8080 cloud-native-go:1.0.1
+$ docker container ls
+$ docker container ls -a
+```
+Through Postman, you can see that everythinng is working as expected
+
+---
+#### Running Docker image locally (Continued)
+
+```sh
+$ docker stop cloud-native-go
+$ docker container ls
+$ docker container ls -a
+$ docker start cloud-native-go
+$ docker container ls
+$ docker kill cloud-native-go
+$ docker container rm cloud-native-go
+$ docker run --name cloud-native-go --cpu-quota 50000 --memory 64m --memory-swappiness 0 -d -p 8080:8080 cloud-native-go:1.0.1
+$ docker container rm -f cloud-native-go
+$ docker container rm $(docker container ls -aq)
+```
+
+---
+### 3.4 Improved Docker Image and Docker Compose
+
+* Writing improved Dockerfile for smaller images
+* Using Docker Compose to build and run the image
+
+---
+#### Writing improved Dockerfile for smaller images
+
+```sh
+$ cp $GOPATH/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter2_3 chapter3_4
+$ cd chapter3_4
+
+$ go clean 
+$ grep -rl 'chapter2_3' ./ | xargs sed -i '' -e 's/chapter2_3/chapter3_4/g' 
+
+$ vi Dockerfile
+```
+
+---
+#### chapter3_4/Dockerfile
+
+```dockerfile
+FROM alpine:3.5
+MAINTAINER YG Kim(credemol@gmail.com)
+
+COPY ./Cloud-Native-Go /app/Cloud-Native-Go
+RUN chmod +x /app/Cloud-Native-Go
+
+ENV PORT 8080
+EXPOSE 8080
+
+ENTRYPOINT /app/Cloud-Native-Go
+```
+
+---
+#### Go build
+
+```sh
+$ GOOS=linux GOARCH=amd64 go build -o Cloud-Native-Go
+$ ls
+
+$ docker build -t cloud-native-go:1.0.1-alpine .
+$ docker image ls | grep cloud-native-go
+
+$ docker run --name cloud-native-go -d -p 8080:8080 cloud-native-go:1.0.1-alpine
+
+$ docker tag cloud-native-go:1.0.1-alpine credemol/cloud-native-go:1.0.1-alpine
+$ docker login
+$ docker push credemol/cloud-native-go:1.0.1-alpine
+
+
+```
+
+---
+#### Docker Compose
+
+```sh
+$ docker container stop $(docker container ls -q)
+$ docker container rm $(docker container ls -aq)
+$ docker image rm cloud-native-go:1.0.1-alpine
+$ vi docker-compose.yml
+```
+
+#### chapter3_4/docker-compose.yml
+
+```yaml
+version: '2'
+services:
+  microservice:
+    build: .
+    image: cloud-native-go:1.0.1-alpine
+    environment:
+    - PORT=9090
+    ports:
+    - "9090:9090"
+```
+
+---
+#### docker-compose build 
+
+```sh
+$ docker-compose build
+$ docker image ls
+
+```
+
+---
+#### docker-compose.yml - multi containers
+
+```yaml
+version: '2'
+services:
+  microservice:
+    build: .
+    image: cloud-native-go:1.0.1-alpine
+    environment:
+    - PORT=9090
+    ports:
+    - "9090:9090"
+  nginx:
+    image: "nginx:1.11.9"
+    ports:
+    - "8080:80"
+    links:
+    - microservice  
+```
+@[10-15](nginx container)
+
+---
+#### docker-compose - build multi containers
+
+```sh
+$ docker-compose up -d
+```
+
+send requests to URLs below
+* [http://localhost:8080](http://localhost:8080) or [http://docker-machine-ip:8080](http://docker-machine-ip:8080)
+* [http://localhost:9090](http://localhost:9090) or [http://docker-machine-ip:9090](http://docker-machine-ip:9090)
+
+```sh
+$ doker-compose down
+$ docker container ls -a
+```
+
+---
+## 4 Introduction to Kubernetes and Go Microservice Orchestration
+
+- Overview of Kubernetes architecture and main concepts
+- Deploy a Go microservice to Kubernetes locally
+- Implement Deployment and Service descriptors 
+- Scale Deployments and perform Rolling updates
+
+---
+### 4.1 Overview of Kubernetes architecture and main concepts
+
+- Basic architecture of Kubernetes cluster
+- Key concepts and building blocks
+- Setting up Kubernetes in the cloud and locally
+- Introducing the Kubernetes CLI
+
+---
+#### Kubernetes is One of Several Cluster Operating Systems
+![cluster-operating-systems](https://user-images.githubusercontent.com/5771924/34965743-b96394c6-fa99-11e7-814e-8b0eefa8f034.png)
+
+### 4.2 Deploy a Go microservice to Kubernetes locally
+
+
+
+---
+### 4.3 Implement Deployment and Service descriptors 
+
+---
+### 4.4 Scale Deployments and perform Rolling updates
 
 ---
 ## Resources
