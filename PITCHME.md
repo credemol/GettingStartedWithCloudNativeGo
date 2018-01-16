@@ -799,17 +799,14 @@ cp -R chapter2_3 chapter3_1
 #### Docker images and Containers
 (Image)
 
-
-
-
-----
+---
 #### Docker Hub
 
 1. hub.docker.com
 1. keyword: golang
 1. click Search button
 
-----
+---
 #### The Docker Workflow
 ![docker-stages](https://user-images.githubusercontent.com/5771924/34644160-5939b5a0-f385-11e7-8dfd-457c965e7298.png)
 
