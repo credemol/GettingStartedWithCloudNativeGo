@@ -1122,7 +1122,7 @@ $ docker container ls -a
 ---
 ![Key Concepts and Building Blocks](https://user-images.githubusercontent.com/5771924/34968800-b7f6f140-faae-11e7-963d-d3b60907c228.png)
 
-
+<!--
 ---
 #### Key Concepts and Building Blocks
 
@@ -1130,12 +1130,149 @@ Description                        | Image
 -----------------------------------|-------------------------------------
 <sub>- Services are an abstraction for a logical grouping of Pods<br/>- Pods are the smallest deployable compute units in Kubernetes<br/>- Labels are arbitrary key/value pairs used to identify objects<br/>- Replica Sets ensures the required number of Pod replicas are running<br/>- Deployments are used to declare Pods, RCs, Labels and Volumes</sub> | ![building blocks](https://user-images.githubusercontent.com/5771924/34968341-087be9b6-faac-11e7-8266-280e87f64039.png)
 
+-->
+
+---
+#### Setup Kubernetes in the Cloud and Locally
+
+- echo - The default provider is GCE
+  - export KUBERNETES_PROVIDER=gce
+  - export KUBE_GCE_ZONE=europe-west1-d
+  - export NUM_NODES=4
+
+- echo - Another possible provider is AWS
+  - export KUBERNETES_PROVIDER=aws
+  - export KUBE_AWS_ZONE=eu-central-1a
+  - export NUM_SIZE=t2.small
+
+- curl -sSL https://get.k8s.io | bash    
+
+#### Working with minikube
+
+```sh
+$ minikube start
+$ minikube status
+$ kubectl
+$ kubectl cluster-info
+$ minikube dashboard
+$ kubectl get nodes
+$ kubectl config get-contexts
+```
 ---
 ### 4.2 Deploy a Go microservice to Kubernetes locally
 
+- Writing simple YAML descriptor for a pod
+- Connecting to the pod through port forwarding
+- Displaying and assigning labels to pods
+- Using namespaces to organize pods
+- Stopping and removing pods
 
+#### Minikube - Docker Env
 
+```
+$ minikube docker-env
+$ docker images
+$ env | grep DOCKER
+$ eval $(minikube docker-env)
+$ env | grep DOCKER
+$ docker images | grep cloud-native-go
+# you can't see your cloud-native-go:1.0.1-alpine docker image 
+```
 
+---
+```sh
+$ cp -R chapter3_4 chapter4_2
+$ cd chapter4_2
+$ docker build -t cloud-native-go:1.0.1-alpine .
+
+#$ docker images | grep cloud-native-go
+#$ docker login
+#$ docker tag cloud-native-go:1.0.1-alpine credemol/cloud-native-go:1.0.1-alpine
+#$ docker images | grep cloud-native-go
+#$ docker push credemol/cloud-native-go:1.0.1-alpine
+```
+> It is necessary to push docker image before you create a pod.
+---
+#### Writing simple YAML descriptor for a pod
+
+chapter4_2/k8s-pod.yml
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: cloud-native-go
+  labels:
+    language: go
+    env: test
+spec:
+  containers:
+  - name: cloud-native-go
+    image: cloud-native-go:1.0.1
+    ports:
+    - containerPort: 8080
+      protocol: TCP
+```
+
+---
+```sh
+$ kubectl create -f k8s-pod.yml
+$ kubectl get pods
+$ kubectl describe pod cloud-native-go
+$ kubectl port-forward cloud-native-go 8080:8080
+```
+
+---
+#### work with labels 
+
+```sh
+# Ctrl - C to stop port-forwarding
+$ kubectl get pods --show-labels
+$ kubectl get pods -o wide -L env,language
+$ kubectl label pod cloud-native-go hello=world
+$ kubectl get pods --show-labels
+$ kubectl label pod cloud-native-go env=prod --overwrite
+$ kubectl get pods --show-labels
+$ kubectl label pod cloud-native-go hello-
+$ kubectl get pods --show-labels
+```
+
+---
+#### work with namespaces
+
+```sh
+$ kubectl get ns
+$ kubectl get pods --namespaces kube-system
+$ kubectl vi k8s-namespace.yml
+```
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloud-native-go
+```
+
+---
+
+```sh
+$ kubectl create -f k8s-namespace.yml
+$ kubectl get ns
+
+$ kubectl create -f k8s-pod.yml --namespace cloud-native-go
+$ kubectl get pods
+$ kubectl get pods --namespace cloud-native-go
+
+# following two commands are same.
+$ kubectl delete ns cloud-native-go 
+$ kubectl delete -f k8s-namespace.yml 
+
+# all resources in cloud-native-go namespace have been deleted
+$ kubectl get pods --namespace cloud-native-go
+
+# delete cloud-native-go pod 
+$ kubectl delete pod cloud-native-go
+```
 
 ---
 ### 4.3 Implement Deployment and Service descriptors 
