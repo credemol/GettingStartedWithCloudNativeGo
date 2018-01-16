@@ -1121,7 +1121,7 @@ $ docker container ls -a
 
 Description                        | Image
 -----------------------------------|-------------------------------------
-<sub>- Services are an abstraction for a logical grouping of Pods<br/>- Pods are the smallest deployable compute units in Kubernetes<br/>- Labels are arbitrary key/value pairs used to identify objects<br/>- Replica Sets ensures the required number of Pod replicas are running<br/>- Deployments are used to declare Pods, RCs, Labels and Volumes</sub> | AA
+<sub>- Services are an abstraction for a logical grouping of Pods<br/>- Pods are the smallest deployable compute units in Kubernetes<br/>- Labels are arbitrary key/value pairs used to identify objects<br/>- Replica Sets ensures the required number of Pod replicas are running<br/>- Deployments are used to declare Pods, RCs, Labels and Volumes</sub> | ![building blocks](https://user-images.githubusercontent.com/5771924/34968341-087be9b6-faac-11e7-8266-280e87f64039.png)
 
 ---
 ### 4.2 Deploy a Go microservice to Kubernetes locally
