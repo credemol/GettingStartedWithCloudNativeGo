@@ -1116,13 +1116,12 @@ $ docker container ls -a
 ---
 ![Basic Architecture of Kubernetes Cluster](https://i.ytimg.com/vi/fEZxrwNlLyM/maxresdefault.jpg)
 
----?image=https://user-images.githubusercontent.com/5771924/34968606-7bbcd060-faad-11e7-830d-c4ce14524c6b.png&size=auto 100%
+---?image=https://user-images.githubusercontent.com/5771924/34968800-b7f6f140-faae-11e7-963d-d3b60907c228.png
 
-Services are an abstraction for a logical grouping of Pods
-Pods are the smallest deployable compute units in Kubernetes
-Labels are arbitrary key/value pairs used to identify objects
-Replica Sets ensures the required number of Pod replicas are running
-Deployments are used to declare Pods, RCs, Labels and Volumes
+
+---
+![Key Concepts and Building Blocks](https://user-images.githubusercontent.com/5771924/34968800-b7f6f140-faae-11e7-963d-d3b60907c228.png)
+
 
 ---
 #### Key Concepts and Building Blocks
