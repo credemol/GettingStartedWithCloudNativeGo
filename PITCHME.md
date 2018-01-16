@@ -1113,7 +1113,13 @@ $ docker container ls -a
 #### Kubernetes is One of Several Cluster Operating Systems
 ![cluster-operating-systems](https://user-images.githubusercontent.com/5771924/34965743-b96394c6-fa99-11e7-814e-8b0eefa8f034.png)
 
+---
+![Basic Architecture of Kubernetes Cluster](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT07VmQl47Lc8raZYpzCivyF8Savn9i5Z6Dya-z9j0bptfBLBdG)
+
+---
 ### 4.2 Deploy a Go microservice to Kubernetes locally
+
+
 
 
 
