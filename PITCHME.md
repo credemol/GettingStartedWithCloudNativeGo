@@ -1117,7 +1117,6 @@ $ docker container ls -a
 ![Basic Architecture of Kubernetes Cluster](https://i.ytimg.com/vi/fEZxrwNlLyM/maxresdefault.jpg)
 
 ---?image=https://user-images.githubusercontent.com/5771924/34968606-7bbcd060-faad-11e7-830d-c4ce14524c6b.png&size=auto 100%
-![key concepts and building blocks](https://user-images.githubusercontent.com/5771924/34968606-7bbcd060-faad-11e7-830d-c4ce14524c6b.png)
 
 Services are an abstraction for a logical grouping of Pods
 Pods are the smallest deployable compute units in Kubernetes
