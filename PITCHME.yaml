@@ -1,6 +1,6 @@
 theme : night
 theme-override : assets/css/PITCHME.codemax.css
-logo : assets/image/logo.png
+logo : assets/image/oracl-cloud.png
 highlight : atom-one-light
 transition : none
 published : true
