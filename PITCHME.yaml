@@ -1,9 +1,7 @@
-vertical-center : false
-theme : black
-#theme-override : assets/css/PITCHME.css
-#background : assets/images/wallpaper.jpg
-#logo : assets/images/logo.png
-#transition : none
-published : false
-transition : fade
-footnote : "Cloud Native Application"
+theme : night
+theme-override : assets/css/PITCHME.codemax.css
+logo : assets/image/logo.png
+highlight : atom-one-light
+transition : none
+published : true
+footnote : "Oracle Study Group"
