@@ -1,6 +1,8 @@
 Meetup: Cloud Native Applications 
 ===
 
+---
+## Getting Started with Cloud Native Go
 * Subject: Getting Started with Cloud Native Go
 * Date: 2018-01-20, Saturday, 13:00~16:00
 * Place: 15F, ASEM Tower.
@@ -9,7 +11,7 @@ Meetup: Cloud Native Applications
 * Principal Sales Consultant
 
 ---
-# Agenda
+## Agenda
 
 * Chapter 1 : Introduction to Cloud Native Apps and Microservices
 * Chapter 2 : Simple Go Microservices
@@ -1595,7 +1597,7 @@ spec:
 @[9-15](Rolling Update)
 
 ---
-#### 
+#### get pods with watch mode 
 
 Terminal 1
 ```sh
