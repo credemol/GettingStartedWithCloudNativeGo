@@ -17,6 +17,22 @@ Meetup: Cloud Native Applications
 - PT: [https://gitpitch.com/credemol/GettingStartedWithCloudNativeGo/master](https://gitpitch.com/credemol/GettingStartedWithCloudNativeGo/master)
 
 ---
+### Postman Configuration
+
+```sh
+$ mkdir -p ~/tmp/cloud-native-go
+$ cd ~/tmp/cloud-native-go
+$ ls
+
+# Open GettingStartedWithCloudNativeGo folder from Visual Studion Code
+
+# run postman application
+# Import GettingStartedWithCloudNativeGo
+# Import Cloud-Native-Go Env 
+```
+
+
+---
 ## Agenda
 
 1. Introduction to Cloud Native Apps and Microservices
@@ -168,8 +184,9 @@ $ ./microservice
 #### Initialize Project
 
 ```sh
-$ mkdir chapter2_2
-$ cp chapter2_1/microservice.go chapter2_2
+$ cd ${GOPATH}/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter2_1 mkdir chapter2_2
+$
 $ cd chapter2_2
 $ mkdir api
 $ vi api/book.go
@@ -228,7 +245,7 @@ func (b Book) ToJSON() []byte {
 ```
 
 ---
-#### Test 
+#### Unit Test 
 ```sh
 $ echo $GOPATH
 
@@ -639,7 +656,7 @@ The request payload should be like below
 ```
 
 ---
-### Create, Update, Delete a book
+### Get One, Update, Delete a book
 
 ---
 #### book.go - BookHandleFunc
@@ -647,6 +664,7 @@ The request payload should be like below
 func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	isbn := path[len("/api/books/"):]
+	fmt.Println("isbn", isnb)
 
 	switch method := r.Method; method {
 	case http.MethodGet:
@@ -745,7 +763,7 @@ func BookHandleFunc(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodDelete:
 		DeleteBook(isbn)
-		w.WriteHeader(http.StatusOk)
+		w.WriteHeader(http.StatusOK)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Unsupported request method"))
@@ -782,20 +800,20 @@ when updating the book, use this payload
 
 > Introduction to Docker and Microservice Containerization
 
-* 3.1 Basic Docker Workflow and Docker Commands
-* 3.2 Build Naive Docker Image for Go Microservice
-* 3.3 Running Containerized Go Microservice Locally
-* 3.4 Improved Docker Image and Docker Compose
+1. Basic Docker Workflow and Docker Commands
+1. Build Naive Docker Image for Go Microservice
+1. Running Containerized Go Microservice Locally
+1. Improved Docker Image and Docker Compose
 
 ---
 Initilize Project
 
 ```sh
-cd $GOPATH/src/GettingStartedWithCloudNativeGo
-cp -R chapter2_3 chapter3_1
+$ cd $GOPATH/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter2_3 chapter3_1
 ```
 ---
-### Basic Docker Workflow and Docker Commands
+### 3.1 Basic Docker Workflow and Docker Commands
 
 * Hardware versus OS virtualization
 * Docker images and containers
@@ -821,7 +839,7 @@ cp -R chapter2_3 chapter3_1
 #### The Docker Workflow
 ![docker-stages](https://user-images.githubusercontent.com/5771924/34644160-5939b5a0-f385-11e7-8dfd-457c965e7298.png)
 
-
+---
 #### Some Baisc Docker Commands
 
 Command                                      | Action
@@ -850,7 +868,7 @@ $ docker image ls | grep golang
 ```
 
 ---
-### Build Naive Docker Image for Go Microservice
+### 3.2 Build Naive Docker Image for Go Microservice
 
 * Writing a Dockerfile for a Go microservice
 * Building the Docker image from the Dockerfile
