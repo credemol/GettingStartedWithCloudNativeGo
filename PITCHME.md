@@ -13,15 +13,15 @@ Meetup: Cloud Native Applications
 ---
 ## Agenda
 
-* Chapter 1 : Introduction to Cloud Native Apps and Microservices
-* Chapter 2 : Simple Go Microservices
-* Chapter 3 : Introduction to Docker and Go Microservice Containerization
-* Chapter 4 : Introduction to Kubernetes and Go Microservice Orchestration
+1. Introduction to Cloud Native Apps and Microservices
+1. Simple Go Microservices
+1. Introduction to Docker and Go Microservice Containerization
+1. Introduction to Kubernetes and Go Microservice Orchestration
 ---
 ![https://github.com/cncf/landscape](https://raw.githubusercontent.com/cncf/landscape/master/landscape/CloudNativeLandscape_latest.png)
 
 ---
-## Simple Go Microservices
+## 2. Simple Go Microservices
 
 * Simple HTTP server implementation in Go
 * JSON marshalling/unmarshalling of Go structs
@@ -47,6 +47,8 @@ $ source ~/.bash_profile
 
 $ mkdir -p ${GOPATH}/src/GettingStartedWithCloudNativeGo
 $ cd ${GOPATH}/src/GettingStartedWithCloudNativeGo
+# Open GettingStartedWithCloudNativeGo folder with Visual Studio Code
+
 $ mkdir -p chapter2_1
 $ cd chapter2_1
 $ vi microservice.go

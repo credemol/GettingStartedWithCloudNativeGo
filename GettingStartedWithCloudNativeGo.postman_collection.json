@@ -1,0 +1,213 @@
+{
+	"variables": [],
+	"info": {
+		"name": "GettingStartedWithCloudNativeGo",
+		"_postman_id": "addc8f88-e93f-db24-f581-51191ee051f2",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "chapter2_1",
+			"description": "",
+			"item": [
+				{
+					"name": "Cloud Native Go Port 8080",
+					"request": {
+						"url": "",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "call simple go service"
+					},
+					"response": []
+				},
+				{
+					"name": "Cloud Native Go Port 9090",
+					"request": {
+						"url": "http://localhost:9090",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Echo Cloud Nativce Go",
+					"request": {
+						"url": "",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "chapter2_2",
+			"description": "",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"url": "http://localhost:8080/api/books",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "chapter2_3",
+			"description": "",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"url": "http://localhost:8080/api/books",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Book",
+					"request": {
+						"url": "http://localhost:8080/api/books",
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\": \"New Book\",\n\t\"author\": \"Postman\",\n\t\"isbn\": \"1234567890\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Book 0345391802",
+					"request": {
+						"url": "http://localhost:8080/api/books/0345391802",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"The Hitchhiker's Guide to the Galaxy\",\n    \"author\": \"Douglas Adams\",\n    \"isbn\": \"0345391802\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book 0000000000",
+					"request": {
+						"url": "http://localhost:8080/api/books/0000000000",
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Cloud Natvie Go(Update)\",\n    \"author\": \"M.-Leander Reimer\",\n    \"isbn\": \"0000000000\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Book 0000000000",
+					"request": {
+						"url": "http://localhost:8080/api/books/0000000000",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "chapter3_3",
+			"description": "",
+			"item": [
+				{
+					"name": "Get All Books (Docker)",
+					"request": {
+						"url": "http://{{docker-host}}:8080/api/books",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Hello Cloud Native Go (Docker)",
+					"request": {
+						"url": "http://{{docker-host}}:8080/api/hello",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Echo Cloud Native Go (Docker)",
+					"request": {
+						"url": {
+							"raw": "http://{{docker-host}}:8080/api/echo?message=Cloud+Native+Go+with+Docker",
+							"protocol": "http",
+							"host": [
+								"{{docker-host}}"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"echo"
+							],
+							"query": [
+								{
+									"key": "message",
+									"value": "Cloud+Native+Go+with+Docker",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "chapter4_2",
+			"description": "",
+			"item": [
+				{
+					"name": "Get All Books",
+					"request": {
+						"url": "http://localhost:8080/api/books",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
