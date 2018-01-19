@@ -11,6 +11,12 @@ Meetup: Cloud Native Applications
 * Principal Sales Consultant
 
 ---
+## Resource
+
+- GIT: [https://github.com/credemol/GettingStartedWithCloudNativeGo](https://github.com/credemol/GettingStartedWithCloudNativeGo)
+- PT: [https://gitpitch.com/credemol/GettingStartedWithCloudNativeGo/master](https://gitpitch.com/credemol/GettingStartedWithCloudNativeGo/master)
+
+---
 ## Agenda
 
 1. Introduction to Cloud Native Apps and Microservices
@@ -48,7 +54,6 @@ $ source ~/.bash_profile
 $ mkdir -p ${GOPATH}/src/GettingStartedWithCloudNativeGo
 $ cd ${GOPATH}/src/GettingStartedWithCloudNativeGo
 # Open GettingStartedWithCloudNativeGo folder with Visual Studio Code
-
 $ mkdir -p chapter2_1
 $ cd chapter2_1
 $ vi microservice.go
@@ -78,6 +83,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 #### Run & Test the service
 ```sh
 $ go build -o microservice
+# go build -o microservice.exe
 $ ./microservice &
 $ lsof -n -i tcp:8080
 ```
@@ -115,6 +121,7 @@ func port() string {
 ```sh
 $ go clean
 $ go build -o microservice
+# go build -o microservice.exe
 $ export PORT=9090
 $ ./microservice
 ```
