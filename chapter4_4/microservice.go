@@ -1,7 +1,7 @@
 package main
 
 import (
-	"GettingStartedWithCloudNativeGo/chapter3_4/api"
+	"GettingStartedWithCloudNativeGo/chapter4_4/api"
 	"fmt"
 	"net/http"
 	"os"
@@ -27,7 +27,7 @@ func port() string {
 
 func index(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Hello Cloud Native Go.")
+	fmt.Fprint(w, "Hello Cloud Native Go.(Updated)")
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {

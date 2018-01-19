@@ -1368,14 +1368,201 @@ $ kubectl describe deployment cloud-native-go
 $ vi k8s-service.yml
 ```
 
+---
 #### k8s-service.yml
 
 ```yaml
+apiVersion: v1
+kind: Service
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+    tier: service
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+  selector:
+    app: cloud-native-go
+```
 
+---
+#### create service
+
+```sh
+$ kubectl create -f k8s-service.yml
+$ kubectl get svc 
+$ kubectl describe svc cloud-native-go
+
+
+
+$ minikube service cloud-native-go --url
+$ curl $(minikube service cloud-native-go --url)
+```
+
+---
+#### Adding liveness and readiness probes (k8s-deployment.yaml)
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cloud-native-go
+        tier: service
+    spec:
+      containers:
+      - name: cloud-native-go
+        image: "cloud-native-go:1.0.1-alpine"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet: 
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+```
+@[30-41] (readinessProbe and livenessProbe)
+
+---
+#### apply deployment
+
+```sh
+$ kubectl apply -f k8s-deployment.yaml
+
+$ kubectl describe deployment cloud-native-go
+$ kubectl get pods
 ```
 
 ---
 ### 4.4 Scale Deployments and perform Rolling updates
+
+- Scaling Kubernetes deployments
+- Performing rolling updates of Kubernetes deployment
+
+---
+#### Initialize project
+
+```sh
+$ cd $GOPATH/src/GettingStartedWithCloudNativeGo
+$ cp -R chapter4_3 chapter4_4
+$ cd chapter4_4
+$ kubectl delete all -l app=cloud-native-go
+
+```
+
+---
+#### Scaling Kubernetes deployments (k8s-deployment.yaml)
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  minReadySeconds: 5
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        app: cloud-native-go
+        tier: service
+    spec:
+      containers:
+      - name: cloud-native-go
+        image: "cloud-native-go:1.0.1-alpine"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet: 
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+```
+@[9-15](Rolling Update)
+
+---
+#### 
+
+Terminal 1
+```sh
+$ kubectl get pods -w
+```
+
+Terminal 2
+```sh
+$ kubectl create -f k8s-deployment.yaml --record=true
+$ kubectl get pods
+$ kubectl scale deployment cloud-native-go --repllicas=5
+$ kubectl get pods
+$ kubectl scale deployment cloud-native-go --repllicas=3
+$ kubectl get pods
+```
+
+---
+###
+```sh
+$ kubectl create -f k8s-service.yml
+$ curl $(minikube service cloud-native-go --url)
+
+$ minikube docker-env
+$ eval $(minikube docker-env)
+
+$ vi microservice.go 
+
+```
+---
+#### Performing rolling updates of Kubernetes deployment
 
 ---
 ## Resources

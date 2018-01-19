@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
   - name: cloud-native-go
-    image: cloud-native-go:1.0.1-alpine
+    image: cloud-native-go:1.0.2-alpine
     ports:
     - containerPort: 8080
       protocol: TCP

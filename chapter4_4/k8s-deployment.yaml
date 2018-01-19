@@ -6,6 +6,13 @@ metadata:
     app: cloud-native-go
 spec:
   replicas: 2
+  revisionHistoryLimit: 10
+  minReadySeconds: 5
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 2
   template:
     metadata:
       labels:
