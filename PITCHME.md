@@ -884,6 +884,7 @@ docker build -t cloud-native-go:1.0.0 .
 docker image ls | grep cloud-native-go
 ```
 
+---
 #### Alpine Version
 
 chapter3_2/Dockerfile
@@ -1113,21 +1114,8 @@ $ docker container ls -a
 ---
 ![Basic Architecture of Kubernetes Cluster](https://i.ytimg.com/vi/fEZxrwNlLyM/maxresdefault.jpg)
 
----?image=https://user-images.githubusercontent.com/5771924/34968800-b7f6f140-faae-11e7-963d-d3b60907c228.png
-
-
 ---
 ![Key Concepts and Building Blocks](https://user-images.githubusercontent.com/5771924/34968800-b7f6f140-faae-11e7-963d-d3b60907c228.png)
-
-<!--
----
-#### Key Concepts and Building Blocks
-
-Description                        | Image
------------------------------------|-------------------------------------
-<sub>- Services are an abstraction for a logical grouping of Pods<br/>- Pods are the smallest deployable compute units in Kubernetes<br/>- Labels are arbitrary key/value pairs used to identify objects<br/>- Replica Sets ensures the required number of Pod replicas are running<br/>- Deployments are used to declare Pods, RCs, Labels and Volumes</sub> | ![building blocks](https://user-images.githubusercontent.com/5771924/34968341-087be9b6-faac-11e7-8266-280e87f64039.png)
-
--->
 
 ---
 #### Setup Kubernetes in the Cloud and Locally
@@ -1144,6 +1132,7 @@ Description                        | Image
 
 - curl -sSL https://get.k8s.io | bash    
 
+---
 #### Working with minikube
 
 ```sh
@@ -1273,6 +1262,117 @@ $ kubectl delete pod cloud-native-go
 
 ---
 ### 4.3 Implement Deployment and Service descriptors 
+
+- Writing simple YAML descriptor for a deployment
+- Assigning CPU and RAM resources to a container
+- Writing simple YAML descriptor for a service
+- Adding liveness and readiness probes
+- Connecting to the service through a node port
+
+---
+#### Initialize Project
+
+```sh
+$ cp -R chapter4_2 chapter4_3
+$ cd chapter4_3
+$ vi k8s-deployment.yaml
+
+```
+
+---
+#### k8s-deployment.yaml
+
+```sh
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cloud-native-go
+        tier: service
+    spec:
+      containers:
+      - name: cloud-native-go
+        image: "cloud-native-go:1.0.1-alpine"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+```
+
+---
+
+```sh
+$ kubectl get deployments,pods,rs
+
+$ kubectl create -f k8s-deployments.yaml
+$ kubectl get deployments,pods,rs
+```
+
+---
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: cloud-native-go
+        tier: service
+    spec:
+      containers:
+      - name: cloud-native-go
+        image: "cloud-native-go:1.0.1-alpine"
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "125m"
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+```
+@[23-29](Managing Compute Resources for Container)
+---
+[https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+
+---
+#### apply deployment
+
+```sh
+$ kubectl apply -f k8s-deployment.yaml
+
+$ kubectl describe deployment cloud-native-go
+```
+
+---
+#### service
+
+```sh
+$ vi k8s-service.yml
+```
+
+#### k8s-service.yml
+
+```yaml
+
+```
 
 ---
 ### 4.4 Scale Deployments and perform Rolling updates

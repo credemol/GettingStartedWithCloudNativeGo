@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: cloud-native-go
+  labels:
+    app: cloud-native-go
+    tier: service
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+  selector:
+    app: cloud-native-go
