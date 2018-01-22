@@ -1424,9 +1424,6 @@ $ kubectl create -f k8s-service.yml
 $ kubectl get svc 
 $ kubectl describe svc cloud-native-go
 
-<<<<<<< HEAD
-
-
 $ minikube service cloud-native-go --url
 $ curl $(minikube service cloud-native-go --url)
 ```
@@ -1485,68 +1482,6 @@ spec:
 ```sh
 $ kubectl apply -f k8s-deployment.yaml
 
-=======
-
-
-$ minikube service cloud-native-go --url
-$ curl $(minikube service cloud-native-go --url)
-```
-
----
-#### Adding liveness and readiness probes (k8s-deployment.yaml)
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata: 
-  name: cloud-native-go
-  labels:
-    app: cloud-native-go
-spec:
-  replicas: 2
-  template:
-    metadata:
-      labels:
-        app: cloud-native-go
-        tier: service
-    spec:
-      containers:
-      - name: cloud-native-go
-        image: "cloud-native-go:1.0.1-alpine"
-        ports:
-        - containerPort: 8080
-        env:
-        - name: PORT
-          value: "8080"
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "125m"
-          limits:
-            memory: "128Mi"
-            cpu: "250m"
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-        livenessProbe:
-          httpGet: 
-            path: /
-            port: 8080
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-```
-@[30-41] (readinessProbe and livenessProbe)
-
----
-#### apply deployment
-
-```sh
-$ kubectl apply -f k8s-deployment.yaml
-
->>>>>>> cf27df477b9607c17ace6a7208f1a00a52d95bdd
 $ kubectl describe deployment cloud-native-go
 $ kubectl get pods
 ```
